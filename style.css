@@ -1,0 +1,62 @@
+body {
+	background-color: rgba(255,255,255,0.2);
+	background-image: url('images/pexels-photo-1054218.jpeg');
+	background-size: cover;
+	background-blend-mode: screen;
+	color: rgba(255,255,255,0.9);
+	font-size: 100px;
+	text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+	font-family: 'Nanum Pen Script', cursive;
+	display: flex;
+	justify-content: center;
+}
+
+.container {
+	margin-top: 40px;
+	display: grid;
+	width: 267px;
+	grid-template-rows: 89px 89px 89px;
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.square {
+	display: flex;
+	grid-column: span 1;
+	border: 0px solid rgba(0,0,0,0.4);
+	border-radius: 8px 13px;
+	margin: 1px;
+	justify-content: center;
+	align-items: center;
+
+	background-color: rgba(255,255,255,0.2);
+	transition: background-color 0.5s;
+}
+
+.square:hover {
+	background-color: rgba(255,255,255,0.5);
+	cursor: pointer;
+}
+
+.selected-player-1 {
+	background-color: rgba(89,144,233,0.2);
+}
+
+.selected-player-1:hover {
+	background-color: rgba(89,144,233,0.3);	
+}
+
+.selected-player-2 {
+	background-color: rgba(89,233,2144,0.2);
+}
+
+.selected-player-2:hover {
+	background-color: rgba(89,233,2144,0.3);
+}
+
+.victory-square {
+	background-color: rgba(180,155,87,0.4);
+}
+
+.victory-square:hover {
+	background-color: rgba(180,155,87,0.4);	
+}
