@@ -1,3 +1,4 @@
+// 🌍 Global variables 🌍
 const container = document.querySelectorAll('.container');
 const squares = document.querySelectorAll('.square');
 let computerHasMoved = false;
@@ -7,10 +8,11 @@ const gameBoard = {
 	b1: null, b2: null, b3: null,
 	c1: null, c2: null, c3: null
 };
+// 🎛 Dynamic data 🎛
 let movesPlayed = [];
 let player1sMoves = [];
 let player2sMoves = [];
-// Data
+// 💾 Static data 💾
 const bestFirstMoves = ['a1', 'a3', 'b2', 'c1', 'c3'];
 const cornerSquares = ['a1', 'a3', 'c1', 'c3'];
 const edgeSquares = ['a2', 'b1', 'b3', 'c2']
@@ -25,14 +27,12 @@ const victoryConditions = [
 		['a1', 'b2', 'c3'], ['a3', 'b2', 'c1']
 	];
 const allSquares = ['a1', 'a2', 'a3', 'b1', 'b2', 'b3', 'c1', 'c2', 'c3'];
-// Playability variables
+// 🕹 Playability variables 🕹
 let player1sTurn = true;
 let player2sTurn = false;
 let humanVsComputer = true;
 let computerGoesFirst = false;
-
-
-
+let difficulty = 2;
 
 function addEventListeners() {
 	squares.forEach(square => {
@@ -42,9 +42,9 @@ function addEventListeners() {
 
 function selectPlayers() {
 	// if you want to be player 2, just switch player2sturn to true here
-	// jump to makeComputerThink
+	// jump to think
 	if (computerGoesFirst) {
-		makeComputerThink();
+		think();
 	}
 }
 
@@ -68,7 +68,7 @@ function selectSquare(event) {
 	if (this.className === "square") makeMove(event);
 
 	if (humanVsComputer && !computerHasMoved) {
-		makeComputerThink();
+		think();
 	} else {
 		computerHasMoved = false;
 	}
@@ -94,14 +94,43 @@ function makeMove(event) {
 	checkIfGameOver();
 }
 
-function makeComputerThink() {
+// 🔮 AI 🔮
+function think() {
 	computerHasMoved = true;
+	switch(difficulty) {
+		case 1:
+			playRandomSquare();
+			break;
+		case 2:
+			playCompetitively();
+			break;
+		case 3:
+			playPerfectly();
+			break;
+		case 0: 
+			playIrratically();
+			break;
+	}
+}
 
+function playPerfectly() {
+	console.log('playing perfectly...')
+	// Computer goes first
 	if (!movesPlayed.length) {
-		const computersMove = bestFirstMoves[Math.floor(Math.random() * bestFirstMoves.length)];
-		document.getElementById(computersMove).click();
+	const computersMove = bestFirstMoves[Math.floor(Math.random() * bestFirstMoves.length)];
+	document.getElementById(computersMove).click();
+	} else if (movesPlayed.length === 2) {
+		playCompetitively();
+	} else if (movesPlayed.length === 4) {
+		playCompetitively();
+	} else if (movesPlayed.length === 6) {
+		playCompetitively();
+	} else if (movesPlayed.length === 8) {
 
-	} else if (movesPlayed.length === 1) {
+	} 
+
+	// Human goes first
+	else if (movesPlayed.length === 1) {
 		if (cornerSquares.includes(movesPlayed[0])) {
 			document.getElementById(centerSquare).click();
 		} else if (movesPlayed[0] === centerSquare) {
@@ -143,49 +172,68 @@ function makeComputerThink() {
 		} else {
 			if (!winningMove(1)) {
 				console.log('used to shrug...') //  write a function that checks for enemy forks
-				document.getElementById(remainingSquares()[Math.floor(Math.random() * remainingSquares.length)]).click()
+				playRandomSquare();
 			} else {
 				document.getElementById(winningMove(1)).click()
 			}
 		}
 
 	} else if (movesPlayed.length === 5) {
-		if (!winningMove(2)) {
-			if (!winningMove(1)) {
-				console.log("At a loose end...") //  write a function that checks for enemy forks
-				document.getElementById(remainingSquares()[Math.floor(Math.random() * remainingSquares.length)]).click()
-			} else {
-				document.getElementById(winningMove(1)).click()
-			}
-		} else {
-			document.getElementById(winningMove(2)).click()
-		}
+		playCompetitively();
 
 	} else if (movesPlayed.length === 7) {
-		if (!winningMove(2)) {
-			if (!winningMove(1)) {
-				console.log("Deeply at a loose end...") //  write a function that checks for enemy forks
-				document.getElementById(remainingSquares()[Math.floor(Math.random() * remainingSquares.length)]).click()
-			} else {
-				document.getElementById(winningMove(1)).click()
-			}
-		} else {
-			document.getElementById(winningMove(2)).click()
-		}
+		playCompetitively();
 		
 	} else if (movesPlayed.length === 9) {
-		if (!winningMove(2)) {
-			if (!winningMove(1)) {
-				console.log("Fell at the final furlong") // might be impossible?
-				document.getElementById(remainingSquares()[Math.floor(Math.random() * remainingSquares.length)]).click()
-			} else {
-				document.getElementById(winningMove(1)).click()
-			}
-		} else {
-			document.getElementById(winningMove(2)).click()
-		}
+		playCompetitively();
 		
 	}
+}
+
+function playCompetitively() {
+	console.log('playing competitively...')
+	console.log('Thinking competitively but short sightedly. Checking winning moves for me')
+	if (!winningMove(2)) { 
+		console.log('nothing there for me, checking winning moves for you')
+		if (!winningMove(1)) { 
+			console.log("Nothing immediately grabs me, I'll pick something at random.")
+			playRandomSquare();
+		} else {
+			document.getElementById(winningMove(1)).click()
+		}
+	} else {
+		document.getElementById(winningMove(2)).click()
+	}
+}
+
+function playRandomSquare() {
+	console.log('playing randomly...')
+	document.getElementById(randomSquare()).click();
+}
+
+function playIrratically() {
+	console.log('(playing irratically)')
+	let randomDifficulty = Math.floor(Math.random() * 3);
+	switch(randomDifficulty) {
+		case 0:
+			playRandomSquare();
+			break;
+		case 1:
+			playCompetitively();
+			break;
+		case 2:
+			playPerfectly();
+	}
+}
+
+// 🛠 AI helpers 🛠
+function randomSquare() {
+	console.log(remainingSquares())
+	return remainingSquares()[Math.floor(Math.random() * remainingSquares().length)]
+}
+
+function attemptCheckMate() {
+
 }
 
 function remainingSquares() {
@@ -242,6 +290,7 @@ function arrayContainsArray (superset, subset) {
   return true;
 }
 
+// 🎭 Storyboard 🎭
 function checkIfGameOver(){
 	victoryConditions.forEach(condition => {
 		const player1HasWon = condition.every(square => 
