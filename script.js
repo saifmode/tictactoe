@@ -1,3 +1,10 @@
+// STUFF LEFT TO DO:
+/* 
+	create UI so user can select difficulty level, reset board etc
+	finish the perfect AI, with ability to spot forks
+	maybe create other types of AI, make different irratic modes etc
+*/
+
 // 🌍 Global variables 🌍
 const container = document.querySelectorAll('.container');
 const squares = document.querySelectorAll('.square');
