@@ -24,6 +24,7 @@ const victoryConditions = [
 		['a1', 'b1', 'c1'], ['a2', 'b2', 'c2'], ['a3', 'b3', 'c3'],
 		['a1', 'b2', 'c3'], ['a3', 'b2', 'c1']
 	];
+const allSquares = ['a1', 'a2', 'a3', 'b1', 'b2', 'b3', 'c1', 'c2', 'c3'];
 // Playability variables
 let player1sTurn = true;
 let player2sTurn = false;
@@ -95,8 +96,7 @@ function makeMove(event) {
 
 function makeComputerThink() {
 	computerHasMoved = true;
-	// First move!
-	// if computer is first to play, select from best moves
+
 	if (!movesPlayed.length) {
 		const computersMove = bestFirstMoves[Math.floor(Math.random() * bestFirstMoves.length)];
 		document.getElementById(computersMove).click();
@@ -112,8 +112,6 @@ function makeComputerThink() {
 		}
 
 	} else if (movesPlayed.length === 3) {
-		// if computer is in the centre, human must have gone corner or edge on last move
-		// we'll check if human went with two edges, or two corners, or a combination of both
 		const players1sFirstTwoMoves = player1sMoves.sort().join('')
 
 		const playedSameSideCorners = sameSideCorners.some(pair => pair.join('') === players1sFirstTwoMoves);
@@ -142,19 +140,20 @@ function makeComputerThink() {
 		} else if (playedOppositeEdges) {
 			const computersMove = cornerSquares[Math.floor(Math.random() * cornerSquares.length)];
 			document.getElementById(computersMove).click()
-		} else { // other combinations
+		} else {
 			if (!winningMove(1)) {
-				console.log('shrug')
+				console.log('used to shrug...') //  write a function that checks for enemy forks
+				document.getElementById(remainingSquares()[Math.floor(Math.random() * remainingSquares.length)]).click()
 			} else {
 				document.getElementById(winningMove(1)).click()
 			}
 		}
 
 	} else if (movesPlayed.length === 5) {
-		// check for computer winning move first and do that. if no winning move, check player has winning move and intercept
 		if (!winningMove(2)) {
 			if (!winningMove(1)) {
-				console.log("At a loose end...") // search for forks by checking each square for possible victories. if >1 route to victory then that's a fork and computer should play it
+				console.log("At a loose end...") //  write a function that checks for enemy forks
+				document.getElementById(remainingSquares()[Math.floor(Math.random() * remainingSquares.length)]).click()
 			} else {
 				document.getElementById(winningMove(1)).click()
 			}
@@ -163,10 +162,22 @@ function makeComputerThink() {
 		}
 
 	} else if (movesPlayed.length === 7) {
-		// check for computer winning move first and do that. if no winning move, check player has winning move and intercept
-		if (!winningMove(2)) { // can the computer win? if so go for the kill
-			if (!winningMove(1)) { // can the player win? if not, defend!
-				console.log("Deeply at a loose end...") // no immediate path to victory for either player. search for forks by checking each square for possible victories. if >1 route to victory then that's a fork and computer should play it
+		if (!winningMove(2)) {
+			if (!winningMove(1)) {
+				console.log("Deeply at a loose end...") //  write a function that checks for enemy forks
+				document.getElementById(remainingSquares()[Math.floor(Math.random() * remainingSquares.length)]).click()
+			} else {
+				document.getElementById(winningMove(1)).click()
+			}
+		} else {
+			document.getElementById(winningMove(2)).click()
+		}
+		
+	} else if (movesPlayed.length === 9) {
+		if (!winningMove(2)) {
+			if (!winningMove(1)) {
+				console.log("Fell at the final furlong") // might be impossible?
+				document.getElementById(remainingSquares()[Math.floor(Math.random() * remainingSquares.length)]).click()
 			} else {
 				document.getElementById(winningMove(1)).click()
 			}
@@ -175,6 +186,16 @@ function makeComputerThink() {
 		}
 		
 	}
+}
+
+function remainingSquares() {
+	let _remainingSquares = [];
+	allSquares.forEach(square => {
+		if (!movesPlayed.includes(square))
+			_remainingSquares.push(square)
+	})
+
+	return _remainingSquares;
 }
 
 function winningMove(player) {
@@ -222,7 +243,6 @@ function arrayContainsArray (superset, subset) {
 }
 
 function checkIfGameOver(){
-	// console.log(gameBoard);
 	victoryConditions.forEach(condition => {
 		const player1HasWon = condition.every(square => 
 			gameBoard[square] === 'x');
