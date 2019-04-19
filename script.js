@@ -244,7 +244,6 @@ function playIrratically() {
 
 // 🛠 AI helpers 🛠
 function randomSquare() {
-	console.log(remainingSquares())
 	return remainingSquares()[Math.floor(Math.random() * remainingSquares().length)]
 }
 
@@ -322,6 +321,13 @@ function checkIfGameOver(){
 			endGame(condition);
 		}
 	})
+
+	if (moves.all.length >= 9) {
+			console.log('wut')
+			squares.forEach(square => {
+				square.className = "square draw"
+		})
+	}
 
 }
 
