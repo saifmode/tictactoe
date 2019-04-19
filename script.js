@@ -1,8 +1,7 @@
 // STUFF LEFT TO DO:
 /* 
-	create UI so user can select difficulty level, reset board etc
 	finish the perfect AI, with ability to spot forks
-	maybe create other types of AI, make different irratic modes etc
+
 */
 
 // 🌍 Global variables 🌍
@@ -10,15 +9,15 @@ const container = document.querySelectorAll('.container');
 const squares = document.querySelectorAll('.square');
 let computerHasMoved = false;
 let gameOver = false;
-const gameBoard = {
+let player1sTurn = true;
+let player2sTurn = false;
+let gameBoard = {
 	a1: null, a2: null, a3: null,
 	b1: null, b2: null, b3: null,
 	c1: null, c2: null, c3: null
 };
 // 🎛 Dynamic data 🎛
-let movesPlayed = [];
-let player1sMoves = [];
-let player2sMoves = [];
+let moves = {};
 // 💾 Static data 💾
 const bestFirstMoves = ['a1', 'a3', 'b2', 'c1', 'c3'];
 const cornerSquares = ['a1', 'a3', 'c1', 'c3'];
@@ -35,32 +34,42 @@ const victoryConditions = [
 	];
 const allSquares = ['a1', 'a2', 'a3', 'b1', 'b2', 'b3', 'c1', 'c2', 'c3'];
 // 🕹 Playability variables 🕹
-let player1sTurn = true;
-let player2sTurn = false;
 let humanVsComputer = true;
 let computerGoesFirst = false;
-let difficulty = 2;
+let difficulty = document.getElementById('difficulty-level'); // 1: easy, 2: competitive, 3: perfect play, 0: irratic (mix of all 3)
 
 function addEventListeners() {
 	squares.forEach(square => {
 		square.addEventListener('click', selectSquare);
 	})
+
+	document.getElementById('reset').addEventListener('click', init);
+	document.getElementById('human-first').addEventListener('click', () => {
+		computerGoesFirst = false;
+		init();
+	})
+	document.getElementById('cpu-first').addEventListener('click', () => {
+		computerGoesFirst = true;
+		init();
+	})
 }
 
 function selectPlayers() {
-	// if you want to be player 2, just switch player2sturn to true here
-	// jump to think
 	if (computerGoesFirst) {
+		switchPlayers();
 		think();
+	} else {
+		player1sTurn = true;
+		player2sTurn = false;
 	}
 }
 
 function logMove(id) {
-	movesPlayed.push(id);
+	moves.all.push(id);
 	if (player1sTurn) {
-		player1sMoves.push(id);
+		moves.player1.push(id);
 	} else {
-		player2sMoves.push(id);
+		moves.player2.push(id);
 	}
 }
 
@@ -104,7 +113,7 @@ function makeMove(event) {
 // 🔮 AI 🔮
 function think() {
 	computerHasMoved = true;
-	switch(difficulty) {
+	switch(parseInt(difficulty.value)) {
 		case 1:
 			playRandomSquare();
 			break;
@@ -123,32 +132,32 @@ function think() {
 function playPerfectly() {
 	console.log('playing perfectly...')
 	// Computer goes first
-	if (!movesPlayed.length) {
+	if (!moves.all.length) {
 	const computersMove = bestFirstMoves[Math.floor(Math.random() * bestFirstMoves.length)];
 	document.getElementById(computersMove).click();
-	} else if (movesPlayed.length === 2) {
+	} else if (moves.all.length === 2) {
 		playCompetitively();
-	} else if (movesPlayed.length === 4) {
+	} else if (moves.all.length === 4) {
 		playCompetitively();
-	} else if (movesPlayed.length === 6) {
+	} else if (moves.all.length === 6) {
 		playCompetitively();
-	} else if (movesPlayed.length === 8) {
-
+	} else if (moves.all.length === 8) {
+		playCompetitively();
 	} 
 
 	// Human goes first
-	else if (movesPlayed.length === 1) {
-		if (cornerSquares.includes(movesPlayed[0])) {
+	else if (moves.all.length === 1) {
+		if (cornerSquares.includes(moves.all[0])) {
 			document.getElementById(centerSquare).click();
-		} else if (movesPlayed[0] === centerSquare) {
+		} else if (moves.all[0] === centerSquare) {
 			const computersMove = cornerSquares[Math.floor(Math.random() * cornerSquares.length)];
 			document.getElementById(computersMove).click();
 		} else {
 			document.getElementById(centerSquare).click();
 		}
 
-	} else if (movesPlayed.length === 3) {
-		const players1sFirstTwoMoves = player1sMoves.sort().join('')
+	} else if (moves.all.length === 3) {
+		const players1sFirstTwoMoves = moves.player1.sort().join('')
 
 		const playedSameSideCorners = sameSideCorners.some(pair => pair.join('') === players1sFirstTwoMoves);
 		const playedOppositeCorners = oppositeCorners.some(pair => pair.join('') === players1sFirstTwoMoves);
@@ -185,13 +194,13 @@ function playPerfectly() {
 			}
 		}
 
-	} else if (movesPlayed.length === 5) {
+	} else if (moves.all.length === 5) {
 		playCompetitively();
 
-	} else if (movesPlayed.length === 7) {
+	} else if (moves.all.length === 7) {
 		playCompetitively();
 		
-	} else if (movesPlayed.length === 9) {
+	} else if (moves.all.length === 9) {
 		playCompetitively();
 		
 	}
@@ -246,7 +255,7 @@ function attemptCheckMate() {
 function remainingSquares() {
 	let _remainingSquares = [];
 	allSquares.forEach(square => {
-		if (!movesPlayed.includes(square))
+		if (!moves.all.includes(square))
 			_remainingSquares.push(square)
 	})
 
@@ -260,9 +269,9 @@ function winningMove(player) {
 	let count = 0;
 
 	if (player === 1) {
-		thisPlayersMoves = player1sMoves
+		thisPlayersMoves = moves.player1
 	} else {
-		thisPlayersMoves = player2sMoves
+		thisPlayersMoves = moves.player2
 	}
 	
 	victoryConditions.forEach(condition => {
@@ -274,7 +283,7 @@ function winningMove(player) {
 
 		if (count > 1) {
 			condition.forEach(move => {
-				if (!movesPlayed.includes(move)) {
+				if (!moves.all.includes(move)) {
 					theWinningMove = move;
 				}
 			})
@@ -324,9 +333,28 @@ function endGame(condition) {
 	})
 }
 
+function resetBoard() {
+	squares.forEach(square => {
+		square.className = "square";
+		square.innerHTML = "";
+	})
+
+	gameBoard = {
+		a1: null, a2: null, a3: null,
+		b1: null, b2: null, b3: null,
+		c1: null, c2: null, c3: null
+	};	
+}
+
 function init() {
-	addEventListeners();
+	moves.all = [];
+	moves.player1 = [];
+	moves.player2 = [];
+	computerHasMoved = false;
+	gameOver = false;
+	resetBoard();
 	selectPlayers();
 }
 
+addEventListeners();
 init();

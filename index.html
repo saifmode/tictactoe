@@ -8,21 +8,37 @@
 </head>
 <body>
 
-
 <div class="container">
-	
-	<div class="square" id="a1"></div>
-	<div class="square" id="a2"></div>
-	<div class="square" id="a3"></div>
-	<div class="square" id="b1"></div>
-	<div class="square" id="b2"></div>
-	<div class="square" id="b3"></div>
-	<div class="square" id="c1"></div>
-	<div class="square" id="c2"></div>
-	<div class="square" id="c3"></div>
+	<div class="gameboard">
+		<div class="square" id="a1"></div>
+		<div class="square" id="a2"></div>
+		<div class="square" id="a3"></div>
+		<div class="square" id="b1"></div>
+		<div class="square" id="b2"></div>
+		<div class="square" id="b3"></div>
+		<div class="square" id="c1"></div>
+		<div class="square" id="c2"></div>
+		<div class="square" id="c3"></div>
+	</div>
+
+	<div class="options">
+		<div class="button" id="human-first">Human<br>first</div>
+		<div class="button" id="reset">Reset</div>
+		<div class="button" id="cpu-first">CPU<br>first</div>
+
+	</div>
+
+	<div class="slidecontainer">
+  		<input type="range" min="1" max="3" value="2" class="slider" id="difficulty-level">
+
+  		<div class="difficulties">
+			<div class="difficulty-label" id="easy">Easy</div>
+			<div class="difficulty-label">Competitive</div>
+			<div class="difficulty-label" id="hard">Unbeatable</div>
+		</div>
+	</div>
 
 </div>
-
 
 <script type="text/javascript" src="script.js"></script>
 </body>
